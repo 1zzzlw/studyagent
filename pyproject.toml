@@ -8,7 +8,9 @@ dependencies = [
     "ipykernel>=7.3.0",
     "langchain>=1.4.0",
     "langchain-openai>=1.6.0",
+    "langchain-text-splitters>=1.1.2",
     "langsmith>=0.12.1",
+    "numpy>=2.5.2",
     "openai>=3.8.0",
     "python-dotenv>=1.2.3",
 ]

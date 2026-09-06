@@ -9,6 +9,7 @@ dependencies = [
     "langchain>=1.4.0",
     "langchain-openai>=1.6.0",
     "langchain-text-splitters>=1.1.2",
+    "langgraph-cli[inmem]>=0.4.31",
     "langsmith>=0.12.1",
     "numpy>=2.5.2",
     "openai>=3.8.0",

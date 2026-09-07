@@ -18,7 +18,7 @@
 | [第 6 章：查询与召回](docs/06-查询与召回.md) | 用户问题如何变成 Top-K 文本块？ | 是，每次查询一次 |
 | [第 7 章：回到 WildAgent 看生产链路](docs/07-WildAgent生产链路对照.md) | 教学代码和生产代码如何一一对应？ | 否 |
 | [第 8 章：排错、验证与练习](docs/08-排错验证与练习.md) | 结果不对时从哪里查？ | 按练习而定 |
-| [第 9 章：切换 Embedding 模型实战](docs/09-切换Embedding模型实战.md) | 怎样迁移、验证、切换和回滚？ | 是，迁移时全量调用 |
+| [第 9 章：切换 Embedding 模型实战](docs/09-切换Embedding模型实战.md) | 怎样在 studyAgent 中迁移、验证、切换和回滚？ | 离线为主；真实模型只运行探针或自行重建 |
 | [第 10 章：腾讯向量服务与配置解耦](docs/10-腾讯向量服务与配置解耦.md) | 怎样让聊天模型与腾讯向量模型使用不同地址和密钥？ | 是，仅探针 Cell |
 
 先按顺序读，不建议直接跳到 WildAgent 的 `RAGSpecLoader`。生产代码还包含后台线程、重试、门禁、安全过滤、追踪和降级策略，这些会遮住最基本的数据流。
@@ -79,7 +79,7 @@ print("07 模块目录：", MODULE_ROOT)
 - `openai>=3.8.0`：调用 OpenAI-compatible `/embeddings`；
 - `numpy>=2.5.2`：在第 2 章手动计算 cosine similarity；
 - Chroma 官方资料：[Python Client](https://docs.trychroma.com/reference/python/client)、[Collection](https://docs.trychroma.com/reference/python/collection)、[Query and Get](https://docs.trychroma.com/docs/querying-collections/query-and-get)；
-- WildAgent 只作为第 7、9 章的只读生产链路对照，不在本模块练习中改动。
+- WildAgent 只作为第 7 章的源码导读，以及第 9 章末尾的生产设计对照；本模块不运行或改动它。
 
 ## 参考实现的命令行运行路径（可选）
 

@@ -6,8 +6,9 @@ dist/
 wheels/
 *.egg-info
 
-# 06-embedding-basics 的 Chroma 是本机生成的向量索引，不提交到 Git。
-06-embedding-basics/storage/chroma/
+# Chroma 是本机生成的向量索引，不提交到 Git。
+06-chroma-basics/storage/chroma/
+07-embedding-basics/storage/chroma/
 
 # Virtual environments
 .venv

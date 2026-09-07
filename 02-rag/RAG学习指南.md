@@ -91,19 +91,21 @@ LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 LANGSMITH_API_KEY=你的_LangSmith_Key
 LANGSMITH_PROJECT=study-rag
 
-# 阿里云百炼 OpenAI 兼容接口
+# 聊天模型服务（示例仍使用阿里云百炼）
+LLM_MODEL=qwen3.5-flash
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_API_KEY=你的百炼_API_Key
 
-# qwen3.5-ocr 不支持 Function Calling；这里使用通用模型
-LLM_MODEL=qwen3.5-flash
-EMBEDDING_MODEL=text-embedding-v4
+# 向量模型服务（示例改用腾讯云 TokenHub）
+EMBEDDING_MODEL=kinfra-text-embedding-0.6b
+EMBEDDING_BASE_URL=https://tokenhub.tencentmaas.com/v1
+EMBEDDING_API_KEY=你的_TokenHub_API_Key
 ```
 
-注意：Embedding 模型和聊天模型不是同一种模型。
+注意：Embedding 模型和聊天模型不是同一种模型，也不要求来自同一个供应商。
 
 - `qwen3.5-flash`：阅读问题和资料，生成自然语言答案；
-- `text-embedding-v4`：把文字转换成数字向量，用来计算语义相似度。
+- `kinfra-text-embedding-0.6b`：把文字转换成 1024 维向量，用来计算语义相似度。
 
 ---
 
@@ -169,6 +171,8 @@ required_env = [
     "LLM_BASE_URL",
     "LLM_API_KEY",
     "EMBEDDING_MODEL",
+    "EMBEDDING_BASE_URL",
+    "EMBEDDING_API_KEY",
     "LANGSMITH_API_KEY",
 ]
 
@@ -269,10 +273,9 @@ from langchain_openai import OpenAIEmbeddings
 
 embeddings = OpenAIEmbeddings(
     model=os.getenv("EMBEDDING_MODEL"),
-    base_url=os.getenv("LLM_BASE_URL"),
-    api_key=os.getenv("LLM_API_KEY"),
-    # 百炼兼容接口只接受字符串或字符串列表。
-    # 关闭后 LangChain 会发送原始文本，而不是 OpenAI token ID 数组。
+    base_url=os.getenv("EMBEDDING_BASE_URL"),
+    api_key=os.getenv("EMBEDDING_API_KEY"),
+    # 向第三方兼容接口直接发送原始字符串，避免先转为 OpenAI token ID。
     check_embedding_ctx_length=False,
     # 明确要求返回浮点数组，避免第三方兼容接口的 base64 差异。
     encoding_format="float",
@@ -292,7 +295,7 @@ print("前 5 个数字：", test_vector[:5])
 
 每个数字本身没有适合人类阅读的含义。我们关心的是：语义越相近的文字，其向量通常也越接近。
 
-如果百炼返回 `contents is neither str nor list of str`，说明请求中发送的是 token ID，而不是原始字符串。确认初始化参数中已经包含：
+如果第三方兼容接口返回类似 `contents is neither str nor list of str` 的错误，说明请求中发送的是 token ID，而不是原始字符串。确认初始化参数中已经包含：
 
 ```python
 check_embedding_ctx_length=False
@@ -722,4 +725,5 @@ evaluation_cases = [
 - [LangChain 构建语义搜索知识库](https://docs.langchain.com/oss/python/langchain/knowledge-base)
 - [LangChain Vector Store 接口](https://docs.langchain.com/oss/python/integrations/vectorstores)
 - [阿里云百炼 OpenAI 兼容 Embedding 接口](https://help.aliyun.com/zh/model-studio/embedding-interfaces-compatible-with-openai/)
+- [腾讯云 TokenHub 向量模型](https://cloud.tencent.com/document/product/1823/133515)
 - [LangSmith 追踪 LangChain 应用](https://docs.langchain.com/langsmith/trace-with-langchain)

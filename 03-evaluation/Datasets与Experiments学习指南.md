@@ -98,6 +98,13 @@ if not knowledge_dir.exists():
 documents → chunks → embeddings → vector_store → retrieve() → ask_rag()
 ```
 
+如果你已有旧版 Notebook，需要亲手更新两个 Cell：
+
+1. 环境变量检查列表增加 `EMBEDDING_BASE_URL` 和 `EMBEDDING_API_KEY`；
+2. `OpenAIEmbeddings(...)` 使用 `EMBEDDING_MODEL`、`EMBEDDING_BASE_URL`、`EMBEDDING_API_KEY`，不要再把 `LLM_BASE_URL` 和 `LLM_API_KEY` 传给它。
+
+聊天模型的 `ChatOpenAI(...)` 继续使用三个 `LLM_*` 变量。这样 Experiment 测试的是“原聊天模型 + 腾讯向量模型”的完整组合。
+
 先确认本地 RAG 可以回答：
 
 ```python

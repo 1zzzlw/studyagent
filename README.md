@@ -42,7 +42,9 @@ WildAgent 的主要运行链路可以简化为：
 | `04-langgraph-basics` | 理解节点、边、State 和条件路由 | 已创建 |
 | `05-studio` | 使用本地 Agent Server 和 LangGraph Studio 调试 Graph | 已创建 |
 | `06-chroma-basics` | 学习 Chroma 集合、CRUD、metadata、持久化、增量同步和检索 | 学习中 |
-| `07-embedding-basics` | 学习文档/问题向量化、向量空间一致性和模型切换 | 已创建，待学习 |
+| `07-embedding-basics` | 学习文档/问题向量化、向量空间一致性和模型切换 | 已完成 |
+| [`08-websocket-request-flow`](08-websocket-request-flow/README.md) | 从前端消息、WebSocket 接收、持久化任务一路跟踪到 LangGraph 节点和事件回传 | 已创建，待学习 |
+| [`11-model-client`](11-model-client/README.md) | 学习聊天模型配置、客户端工厂、非流式/流式调用、统一响应和错误处理 | 已创建，学习顺序后移 |
 
 Chroma 和 Embedding 是前后衔接的两个独立模块：
 
@@ -61,17 +63,31 @@ Chroma 和 Embedding 是前后衔接的两个独立模块：
 
 腾讯云 TokenHub 的填写示例见根目录 `.env.example`。真实密钥只写入被 Git 忽略的 `.env`，不要写进 Notebook 或提交到仓库。
 
-当前近期目标：依次完成 `06-chroma-basics` 和 `07-embedding-basics`，能够独立说明下面这条链路：
+`07-embedding-basics` 已完成，WildAgent 也已能启动。当前不急着直接修改节点，而是先按一条真实请求纵向熟悉项目。近期顺序调整为：
 
 ```text
-Markdown 文档
-→ 文档加载
-→ RAG 切片
-→ 文本向量化
-→ 写入向量数据库
-→ 问题向量化
-→ 相似度检索
-→ 返回相关上下文
+08-websocket-request-flow：先知道消息从哪里进入、怎样找到节点
+↓
+09-architecture-and-patterns：再看模块职责、依赖方向和已有设计模式
+↓
+10-langgraph-state-node-flow：深入节点之间怎样路由和传递状态
+↓
+11-model-client：最后进入节点内部的聊天模型调用细节
+```
+
+当前近期目标是完成08模块，能够独立跟踪下面这条主链：
+
+```text
+wild-web agentBridge
+→ /ws/agent
+→ agent_websocket() 接收并解析消息
+→ generation_job_service.start_job()
+→ 持久化任务 runner
+→ _handle_with_langgraph()
+→ graph.astream_events()
+→ 具体 LangGraph 节点
+→ DurableEventSink / publish_event()
+→ WebSocket 事件返回前端
 ```
 
 ## 三、后续计划模块
@@ -80,19 +96,19 @@ Markdown 文档
 
 | 编号 | 计划模块 | 学习重点 | WildAgent 对照代码 |
 | --- | --- | --- | --- |
-| 08 | `model-client` | 模型配置、客户端创建、模型兼容、流式调用、重试 | `model_client.py`、`llm_invocation.py` |
-| 09 | `structured-output` | Prompt、JSON/Pydantic 输出、解析和格式恢复 | `prompts.py`、`format_recovery.py`、`schemas/` |
-| 10 | `graph-state-routing` | State、Reducer、条件路由、循环和结束条件 | `graph_state.py`、`graph.py` |
-| 11 | `agent-nodes` | 节点读取状态、调用能力、写回状态的标准结构 | `classifier_node.py`、`chat_node.py` |
-| 12 | `tools-and-protocol` | Tool 定义、参数校验、工具结果和事件协议 | `tools/`、`protocol.py` |
-| 13 | `advanced-rag` | 查询改写、混合检索、过滤、引用、门禁和校准 | `agent/rag/`、`rag_gate.py` 等 |
-| 14 | `service-layer` | AgentService 如何组装模型、RAG、Graph 和业务能力 | `agent_service.py` |
-| 15 | `session-and-jobs` | Session、后台任务、Checkpoint、暂停和恢复 | `session_service.py`、`generation_job_service.py` |
-| 16 | `websocket-streaming` | 流式事件、思考过程、进度、心跳和断线恢复 | `ws_agent.py`、`ws_heartbeat.py` |
+| 09 | `architecture-and-patterns` | 画模块边界和依赖方向，再从真实代码识别 Factory、Adapter、Registry、Facade、Event Sink 等模式 | `app/api/`、`app/services/`、`app/agent/`、`model_client.py`、`component_registry.py` |
+| 10 | `langgraph-state-node-flow` | `GenerationState`、节点局部返回、状态合并、条件边、事件流和 Checkpoint | `graph_state.py`、`graph.py`、`classifier_node.py`、`chat_node.py` |
+| 12 | `structured-output` | Prompt、JSON/Pydantic 输出、解析和格式恢复 | `prompts.py`、`format_recovery.py`、`schemas/` |
+| 13 | `tools-and-protocol` | Tool 定义、参数校验、工具结果和事件协议 | `tools/`、`protocol.py` |
+| 14 | `advanced-rag` | 查询改写、混合检索、过滤、引用、门禁和校准 | `agent/rag/`、`rag_gate.py` 等 |
+| 15 | `service-session-jobs` | AgentService、Session、后台任务、Checkpoint、暂停和恢复怎样协作 | `agent_service.py`、`session_service.py`、`generation_job_service.py` |
+| 16 | `websocket-reliability` | 在08主链基础上深入心跳、断线重连、事件持久化和补发 | `ws_agent.py`、`ws_heartbeat.py`、`generation_job_service.py` |
 | 17 | `validation-repair` | 校验器、错误分类、确定性修复和回调重试 | `validators/`、`repair_tools.py`、`callback_node.py` |
 | 18 | `blueprint-pipeline` | 建筑规划、楼层、构件、合并和最终校验 | `architecture_node.py`、`floor_*`、`merge_node.py` |
 | 19 | `frontend-delivery` | Agent 事件如何进入前端并完成场景重建 | `agentBridge`、Store、`wild-compiler`、`wild-core` |
 | 20 | `testing-and-deployment` | 单元测试、回归测试、配置检查、日志和部署排障 | `tests/`、配置模块和部署脚本 |
+
+这个顺序有意把08和16拆开：08只解决“我怎样从入口找到节点”，16再学习心跳、重连和事件补发等可靠性细节。09也不是收集设计模式名词，而是先用真实导入关系判断职责和耦合，再决定哪些结构值得保留、合并或简化。
 
 ## 四、25 个学习日计划
 
@@ -110,39 +126,39 @@ Markdown 文档
 
 完成标准：能够区分“Embedding 负责生成向量”和“Chroma 负责保存、管理、检索向量”。
 
-### 第二周：模型调用与结构化输出
+### 第二周：请求入口与架构地图
 
 | 天数 | 学习任务 | 当天产出 |
 | --- | --- | --- |
-| Day 6 | 阅读 `model_client.py`，理解配置如何变成模型客户端 | 独立模型调用程序 |
-| Day 7 | 阅读 `llm_invocation.py`，对比 invoke 和 stream | 流式与非流式示例 |
-| Day 8 | 学习超时、重试、Token Usage 和错误转换 | 可重试模型调用器 |
-| Day 9 | 学习系统 Prompt、任务 Prompt 和动态上下文 | Prompt 分层示例 |
-| Day 10 | 学习 JSON/Pydantic 输出和 `format_recovery` | 结构化输出与修复实验 |
+| Day 6 | 阅读前端 `agentBridge`、`/ws/agent` 和 `agent_websocket()` 接收循环 | WebSocket 消息类型与分发表 |
+| Day 7 | 跟踪 `user_message → start_job → runner → _handle_with_langgraph` | 请求进入 Graph 前的调用链图 |
+| Day 8 | 跟踪 `astream_events → 节点事件 → publish_event → 前端`，区分首次执行与恢复 | 一次请求往返的完整时序图 |
+| Day 9 | 盘点 `api / services / agent / tools / spec` 的职责和主要导入方向 | WildAgent 包结构与依赖图 |
+| Day 10 | 从真实代码识别设计模式与耦合点，只形成候选简化清单 | 模式证据表与首批优化候选 |
 
-完成标准：能够解释为什么 WildAgent 节点不直接调用 OpenAI SDK，以及模型输出为什么必须经过结构化校验。
+完成标准：能够从一条 `user_message` 找到实际运行节点，再找到节点产生的事件怎样返回前端；能够用源码证据说明主要模块职责，而不是依靠 AI 问题总结直接改代码。
 
-### 第三周：状态、节点与工具
-
-| 天数 | 学习任务 | 当天产出 |
-| --- | --- | --- |
-| Day 11 | 阅读 `GenerationState`，学习 State 和 Reducer | 状态合并实验 |
-| Day 12 | 阅读 `graph.py`，学习条件路由、循环和结束条件 | Graph 简化图 |
-| Day 13 | 阅读 `classifier_node` 和 `chat_node` | 自定义 LangGraph 节点 |
-| Day 14 | 学习 Tool Schema、参数校验和工具结果 | 两个最小 Tool |
-| Day 15 | 学习 Checkpoint、暂停、恢复和 Studio 调试 | 可恢复的小型 Agent |
-
-阅读顺序应从 `classifier_node`、`chat_node` 开始，不要一开始就进入复杂的建筑生成节点。
-
-### 第四周：高级 RAG、服务和实时通信
+### 第三周：LangGraph 信息传递与模型调用
 
 | 天数 | 学习任务 | 当天产出 |
 | --- | --- | --- |
-| Day 16 | 学习查询改写、Metadata 过滤和混合召回 | Advanced RAG 示例 |
-| Day 17 | 学习引用、质量门禁、校准和检索评测 | RAG 评测报告 |
-| Day 18 | 阅读 `AgentService`，理解模型、RAG 和 Graph 的组装 | 服务初始化流程图 |
-| Day 19 | 学习 Session、Generation Job 和后台任务 | 会话与任务关系图 |
-| Day 20 | 阅读 `ws_agent.py`，学习流式事件、心跳和断线恢复 | WebSocket 进度示例 |
+| Day 11 | 阅读 `GenerationState`，区分初始状态、节点读取字段和局部返回 | 状态字段来源表 |
+| Day 12 | 学习节点返回、Reducer、普通边、条件边和结束条件 | Notebook 状态合并与路由实验 |
+| Day 13 | 跟踪 `classifier → chat/edit/generate` 分支和 `astream_events` 事件 | 可解释的节点路径图 |
+| Day 14 | 完成11模块第1～3章：模型配置、工厂、消息和非流式调用 | Notebook 非流式调用记录 |
+| Day 15 | 完成11模块第4～5章：流式响应和统一结果 | Notebook 流式拼接与 `ModelResult` 实验 |
+
+学习 LangGraph 时先用 `classifier_node` 和 `chat_node` 跑通最短分支，不要一开始就进入建筑生成的所有节点。此时重点是“字段由谁写入、下一个节点为什么被选择”，不是研究建筑算法。
+
+### 第四周：模型输出、工具与高级 RAG
+
+| 天数 | 学习任务 | 当天产出 |
+| --- | --- | --- |
+| Day 16 | 完成11模块第6～7章：超时重试、错误分类和源码调用链 | 错误矩阵与模型调用总结 |
+| Day 17 | 学习系统 Prompt、任务 Prompt、JSON/Pydantic 输出 | 结构化输出最小实验 |
+| Day 18 | 学习解析失败、`format_recovery` 和结构化校验 | 输出失败与恢复记录 |
+| Day 19 | 学习 Tool Schema、参数校验、工具结果和事件协议 | 两个最小 Tool 的 Notebook 记录 |
+| Day 20 | 学习查询改写、过滤、混合召回、引用和质量门禁 | Advanced RAG 检索链路图 |
 
 高级 RAG 需要建立在 `06-chroma-basics` 和 `07-embedding-basics` 之上：
 
@@ -157,23 +173,24 @@ Markdown 文档
 → 注入 Prompt
 ```
 
-本周还需要明确区分：
-
-- LangGraph State：一次工作流内部的数据。
-- Session：用户多轮对话的数据。
-- Generation Job：可以脱离 WebSocket 继续运行的后台任务。
-
-### 第五周：WildAgent 业务核心
+### 第五周：运行可靠性、业务管线与部署
 
 | 天数 | 学习任务 | 当天产出 |
 | --- | --- | --- |
-| Day 21 | 阅读 Architecture Plan 和 Execution Plan | 建筑规划数据结构图 |
-| Day 22 | 阅读楼层设计、空间分析和开洞流程 | 楼层节点调用链 |
-| Day 23 | 阅读构件生成和 Fragment Merge | 多节点结果合并实验 |
-| Day 24 | 阅读 Validator、Repair、Callback、最终交付和前端重建 | 校验—修复—交付流程图 |
-| Day 25 | 串联完整流程，整理演示、简历素材和面试讲稿 | WildAgent 全链路总结 |
+| Day 21 | 阅读 AgentService、Session、Generation Job、Checkpoint 和恢复 | 服务—会话—任务关系图 |
+| Day 22 | 深入心跳、断线重连、持久化事件和补发，并做一次部署链路检查 | WebSocket 可靠性清单 |
+| Day 23 | 阅读 Validator、Repair、Callback，跟踪一次失败怎样被处理 | 校验—修复闭环图 |
+| Day 24 | 串联 Architecture、Floor、Component、Merge、交付和前端重建 | Blueprint 到 Three.js 交付图 |
+| Day 25 | 根据源码证据选择一个最小优化，补回归测试并部署验证 | 优化前后证据、演示与简历素材 |
 
-完成第五周以后，再深入自动化测试、部署排障和 Three.js 细节；第 25 天先保证项目能够完整讲述和演示。
+本周需要明确区分：
+
+- LangGraph State：一次工作流内部由节点读取和更新的数据；
+- Session：用户多轮交互的数据；
+- Generation Job：可以脱离某一条 WebSocket 连接继续运行的后台任务；
+- WebSocket：消息与事件的传输通道，不等于任务本身。
+
+第25天的优化必须来自前面画出的调用链、依赖图、日志或测试证据。一次只改一个边界清楚的问题；验证通过后再继续下一项，不按一份笼统问题清单同时重构多个模块。
 
 ## 五、每天的固定学习方法
 
@@ -186,7 +203,7 @@ Markdown 文档
 5. 回到 WildAgent，说明它为什么需要这一层封装。
 6. 整理当天笔记和仍未理解的问题。
 
-每个模块统一采用四章结构：
+每个模块至少覆盖下面四类内容；内容较多时可以拆成更多章节：
 
 ```text
 第 1 章：这个模块解决什么问题
@@ -206,8 +223,8 @@ Markdown 文档
 
 ## 六、下一步
 
-1. 完成 `06-chroma-basics` 的 Chroma 基础操作和持久化实验。
-2. 完成独立的 `07-embedding-basics` 模块，理解向量化、查询和模型切换。
-3. 先运行 Embedding 连接探针，再重建索引，并理解断点续建和不完整索引。
-4. 创建 `08-model-client`，从 `model_client.py` 和 `llm_invocation.py` 开始。
-5. 先实现一个独立模型调用器，再对照 WildAgent 的封装设计。
+1. 自己创建 `08-websocket-request-flow/01.websocket-request-flow.ipynb`，完成第1～3章。
+2. 完成第4～5章，从 `start_job()` 跟到 runner、`astream_events()` 和实际节点文件。
+3. 完成第6～7章，用一条真实 chat 请求写出带源码与日志证据的完整往返链路。
+4. 完成08模块检查表后，再创建 `09-architecture-and-patterns`，分析模块边界、依赖方向和设计模式。
+5. 暂时不进入已经准备好的 [`11-model-client`](11-model-client/README.md)，等09和10完成后再学习。

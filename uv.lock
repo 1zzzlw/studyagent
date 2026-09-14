@@ -3216,6 +3216,7 @@ dependencies = [
     { name = "langsmith" },
     { name = "numpy" },
     { name = "openai" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
 ]
 
@@ -3230,6 +3231,7 @@ requires-dist = [
     { name = "langsmith", specifier = ">=0.12.1" },
     { name = "numpy", specifier = ">=2.5.2" },
     { name = "openai", specifier = ">=3.8.0" },
+    { name = "pydantic", specifier = ">=2.13.5" },
     { name = "python-dotenv", specifier = ">=1.2.3" },
 ]
 

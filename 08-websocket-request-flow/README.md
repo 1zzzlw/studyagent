@@ -1,199 +1,171 @@
-# 08 · WebSocket Request Flow：从用户消息找到执行节点
+# 08 · WebSocket 源码导读：读懂 `ws_agent.py`
 
 ## 模块定位
 
-- 前置模块：`07-embedding-basics`，你已经完成向量模型与索引流程学习；
-- 后续模块：`09-architecture-and-patterns`，继续整理 WildAgent 的模块边界、依赖方向和设计模式；
-- 本模块解决：一条用户消息怎样从前端进入 WebSocket，变成后台任务，进入 LangGraph 节点，再以事件形式返回前端；
-- 本模块不包含：节点内部的完整业务算法、LangGraph Reducer 细节、模型客户端实现、心跳与断线恢复的全部可靠性设计。
+- 前置模块：`07-embedding-basics`；
+- 后续模块：`09-architecture-and-patterns`、`10-langgraph-state-node-flow`；
+- 核心任务：把 WildAgent 当前的 `ws_agent.py` 拆成可阅读、可验证的源码切片；
+- 学习载体：你已有的 `01.basic.ipynb`；
+- 参考项目：`E:\AgentProject\WildAgent`，本模块只读，不修改、不导入运行。
 
-这是一个 WildAgent 源码导读模块。WildAgent 只用于只读对照；所有练习都在 studyAgent 的 Notebook 中用最小假对象完成，不导入、不启动、不修改 WildAgent。
-
-## 学习目标
-
-学完后，你应该能够：
-
-1. 区分 WebSocket 连接、用户请求、后台任务、Graph 运行、节点和事件；
-2. 从前端 `sendUserMessage()` 找到后端 `/ws/agent`；
-3. 解释 `agent_websocket()` 为什么不直接执行耗时节点；
-4. 从 `GenerationJobService.start_job()` 跟踪到持久化 runner；
-5. 从 `_handle_with_langgraph()` 找到 `graph.astream_events()` 和入口节点；
-6. 根据事件中的节点名定位 `graph.add_node()` 和真实节点函数；
-7. 解释 LangGraph 内部事件怎样变成 WebSocket 业务事件并返回前端；
-8. 识别主路径、兼容路径和仅测试引用，避免跟错代码。
-
-## 先区分六个对象
-
-| 对象 | 例子 | 生命周期 |
-|---|---|---|
-| WebSocket 连接 | 浏览器与 `/ws/agent` 的连接 | 可以断开并重连 |
-| 请求 | 一个 `request_id` 对应的 `user_message` | 从提交到完成或失败 |
-| 会话 | `session_id` | 可以包含多轮请求 |
-| 后台任务 | `GenerationJob` | 可以脱离某条 WebSocket 连接继续运行 |
-| Graph 运行 | 一个 `thread_id` 对应的 LangGraph 执行 | 可以暂停并从 Checkpoint 恢复 |
-| 事件 | `agent_step`、`agent_reply` 等 | 用于持久化、广播和更新前端状态 |
-
-不要把“WebSocket 断开”直接理解成“生成任务停止”。当前 WildAgent 已经用 `GenerationJobService` 把任务和物理连接分开。
-
-## 当前源码确认的主链
+本模块不是一份通用 WebSocket 教程，也不再让你重新实现一个完整服务器。每章只做三件事：
 
 ```text
-wild-web/src/agent/protocol.ts
-→ createUserMessageRequest()
+定位 WildAgent 的真实源码
+→ 摘出一个可以独立理解的行为
+→ 在 Notebook 中用最小假对象或纯函数验证这个行为
+```
 
-wild-web/src/agent/agentBridge.ts
-→ sendUserMessage()
-→ ws.send(JSON.stringify(request))
+## `ws_agent.py` 值得学吗
 
-wild-server/app/api/ws_agent.py
-→ agent_websocket()
-→ receive_text()
-→ JSON / 协议版本 / type 分发
+值得学，但不能把它当成“完美范本”。它有两方面教学价值：
+
+- 值得借鉴：协议版本、心跳、在线状态、后台任务、事件持久化、断线恢复、错误翻译等生产问题都被真实处理了；
+- 值得反思：一个文件同时承担接入、请求清洗、Graph 编排、事件翻译和遗留兼容，长度超过 1700 行，阅读成本和改动风险都很高。
+
+因此你既要学会“这段代码为什么能工作”，也要学会发现“哪些职责以后可以拆开”。职责和设计模式的系统分析放到09模块，本模块不边读边重构。
+
+## 学完后你能做到什么
+
+1. 从前端 `sendUserMessage()` 找到后端 `/ws/agent`；
+2. 解释 `agent_websocket()` 的连接生命周期与消息分发；
+3. 解释 `_prepare_server_request()` 如何清洗用户输入；
+4. 从 `start_job()` 找到后台 runner 和 `DurableEventSink`；
+5. 从 `_run_persistent_langgraph()` 找到 `graph.astream_events()`；
+6. 解释 LangGraph 事件怎样变成前端能处理的业务消息；
+7. 区分当前主链、遗留函数和只被测试调用的函数；
+8. 用 Python 的字典、列表、函数、类、异步函数、异常和回调解释源码。
+
+## 先建立对象边界
+
+| 对象 | 代码中的代表 | 要记住的边界 |
+| --- | --- | --- |
+| 物理连接 | `WebSocket` | 可断开、可重连 |
+| 一次请求 | `request_id` | 对应一次用户操作 |
+| 会话 | `session_id` | 包含多次请求 |
+| 后台任务 | `GenerationJob` | 可脱离连接继续执行 |
+| Graph 运行 | `thread_id` + Checkpoint | 可暂停、恢复 |
+| 业务事件 | `agent_step`、`agent_reply` 等 | 可持久化、广播、重放 |
+
+`WebSocket` 不是后台任务，断线也不必然意味着任务停止。这正是 `GenerationJobService` 存在的原因。
+
+## 当前源码主链
+
+```text
+protocol.ts / types/agent.ts
+→ agentBridge.sendUserMessage()
+→ WebSocket.send(JSON.stringify(request))
+→ ws_agent.agent_websocket()
+→ json.loads() + protocol_version + type 分发
 → _prepare_server_request()
 → generation_job_service.start_job()
-
-wild-server/app/services/generation_job_service.py
-→ _spawn()
-→ _run_job()
+→ GenerationJobService._run_job()
 → DurableEventSink
-→ 已注册的 runner
-
-wild-server/app/api/ws_agent.py
 → _run_persistent_langgraph()
 → _handle_with_langgraph()
-→ get_graph()
 → graph.astream_events()
-
-wild-server/app/agent/graph.py
-→ entry point: classifier
-→ add_node() 注册的具体节点
-
-节点事件
-→ _send_event()
-→ DurableEventSink.send_json()
-→ publish_event()
-→ _broadcast()
-→ agentBridge.onmessage
-→ handleMessage()
-→ Pinia Store / UI
+→ publish_event() / _broadcast()
+→ agentBridge.handleMessage()
+→ 前端 Store / UI
 ```
-
-## 一个必须提前知道的源码陷阱
-
-`ws_agent.py` 中还能看到：
-
-```text
-_process_user_message_safely()
-_handle_user_message()
-_handle_with_langchain()
-```
-
-它们是保留的兼容或测试路径。当前 `agent_websocket()` 的 `user_message` 主分支直接调用 `generation_job_service.start_job()`，并不调用 `_handle_user_message()`。
-
-阅读时不能只看“函数名字像入口”，必须再搜索“谁调用它”。测试文件引用某个函数，也不能证明生产主链会经过它。
 
 ## 章节目录
 
-| 章节 | 核心问题 | Notebook 练习结果 |
-|---|---|---|
-| [第1章：先看一条完整请求](docs/01-先看一条完整请求.md) | 一条请求经过哪些对象和边界？ | 建立可检查的调用链台账 |
-| [第2章：前端消息与协议](docs/02-前端消息与协议.md) | 前端到底发送了什么，返回事件怎样分发？ | 构造、序列化并校验协议消息 |
-| [第3章：WebSocket接收与分发](docs/03-WebSocket接收与分发.md) | `/ws/agent` 怎样维护连接并分发消息类型？ | 用假 WebSocket 运行接收循环 |
-| [第4章：GenerationJob后台任务](docs/04-GenerationJob后台任务.md) | 为什么接收循环不直接等待 Graph？ | 用假任务服务观察创建、去重和执行 |
-| [第5章：从Runner进入LangGraph节点](docs/05-从Runner进入LangGraph节点.md) | 怎样从任务 runner 找到入口节点和实际文件？ | 观察最小 Graph 的节点事件 |
-| [第6章：节点事件怎样返回前端](docs/06-节点事件怎样返回前端.md) | 内部 Graph 事件怎样变成 WebSocket 业务事件？ | 翻译、持久化、广播并去重事件 |
-| [第7章：源码跟踪方法与边界](docs/07-源码跟踪方法与边界.md) | 怎样避免跟到兼容路径、测试路径或错误节点？ | 完成带证据的源码调用链表 |
+| 章节 | 只解决一个问题 | Notebook 中的观察结果 |
+| --- | --- | --- |
+| [01 源码地图与阅读顺序](docs/01-ws_agent源码地图与阅读顺序.md) | 1700 多行从哪里开始看 | 能区分主链、辅助函数和遗留路径 |
+| [02 前端协议与 user_message](docs/02-前端协议与user_message.md) | 浏览器实际发送什么 | 构造并断言一条协议消息 |
+| [03 WebSocket 连接生命周期](docs/03-WebSocket连接生命周期.md) | 连接怎样开始和结束 | 观察 `accept → receive → cleanup` |
+| [04 消息解析与类型分发](docs/04-消息解析与类型分发.md) | 多种消息怎样走不同分支 | 表格化验证消息路由 |
+| [05 请求预处理与后台任务入口](docs/05-请求预处理与后台任务入口.md) | 用户消息怎样进入 `start_job()` | 验证复制、过滤、截断和调用参数 |
+| [06 GenerationJob 与持久事件](docs/06-GenerationJob与持久事件.md) | 为什么耗时任务不绑死连接 | 观察任务、事件序号、订阅者变化 |
+| [07 LangGraph 事件边界](docs/07-LangGraph事件边界.md) | WS 文件怎样接入 Graph | 消费假异步事件流并筛选节点事件 |
+| [08 事件回传与前端状态](docs/08-事件回传与前端状态.md) | 后端事件怎样改变前端状态 | 用 Python 镜像 `handleMessage()` |
+| [09 心跳、恢复与源码验收](docs/09-心跳恢复与源码验收.md) | 断线后如何判断任务是否继续 | 完成一次带证据的完整链路审计 |
 
 建议用三天完成：
 
 ```text
-Day 6：第1～3章，请求对象、前端协议和后端接收循环
-Day 7：第4～5章，后台任务、runner 和 Graph 节点定位
-Day 8：第6～7章，事件返回、恢复边界和源码跟踪方法
+Day 6：第01～03章，源码地图、前端请求、连接生命周期
+Day 7：第04～06章，分发、请求预处理、后台任务
+Day 8：第07～09章，Graph 边界、事件回传、恢复与验收
 ```
 
-## Notebook 学习方法
+## Notebook 使用方式
 
-请自行创建并维护：
+继续使用你已经创建的：
 
 ```text
-08-websocket-request-flow/01.websocket-request-flow.ipynb
+08-websocket-request-flow/01.basic.ipynb
 ```
 
-仓库不会替你创建或填写 Notebook。每读完一章，再把对应 Cell 逐个手写进去；每运行一步，都记录输入、输出、对象状态和自己的疑问。
+项目不会替你改这个 Notebook。每章的 Cell 都要亲手输入；代码块后面的解释要先读，再对照自己的真实输出。
 
-Notebook 第一个 Cell 使用：
+如果这个 Notebook 已经写过旧版08的 Cell，请保留为自己的历史记录，并新加一个 Markdown 标题“08源码导读重构版”后再继续。旧 Cell 中出现的已移除节点名只能作为版本对比，不能继续当作当前 WildAgent 主链。
+
+本模块先用普通 `assert` 做单元级验证，第04章再用一次标准库 `unittest` 观察正式测试报告。这样可以先看清输入与状态变化，再认识测试类、`subTest()` 和测试结果对象。
+
+第一个 Cell 建议写：
 
 ```python
 from pathlib import Path
-import sys
 
 current_dir = Path.cwd().resolve()
-if current_dir.name == "08-websocket-request-flow":
-    MODULE_ROOT = current_dir
-    PROJECT_ROOT = current_dir.parent
-else:
-    PROJECT_ROOT = current_dir
-    MODULE_ROOT = PROJECT_ROOT / "08-websocket-request-flow"
+module_root = current_dir if current_dir.name == "08-websocket-request-flow" else current_dir / "08-websocket-request-flow"
+wildagent_root = module_root.parents[1] / "WildAgent"
 
-assert MODULE_ROOT.exists(), f"没有找到08模块：{MODULE_ROOT}"
-sys.path.insert(0, str(PROJECT_ROOT))
+assert module_root.exists(), module_root
+assert wildagent_root.exists(), wildagent_root
 
-print("Notebook工作目录：", current_dir)
-print("studyAgent根目录：", PROJECT_ROOT)
-print("08模块目录：", MODULE_ROOT)
+print("08模块：", module_root)
+print("WildAgent（只读）：", wildagent_root)
 ```
 
-Notebook 中不使用 `__file__`。异步练习直接使用顶层 `await`，不要在 Notebook 中套 `asyncio.run()`。
+代码解释：
 
-进入第3章前，先在 studyAgent 根目录执行一次本地环境检查：
+- `Path.cwd()` 取得 Notebook 的实际工作目录，不能在 Notebook 中依赖 `__file__`；
+- `parents[1]` 从模块目录回到 `E:\AgentProject`；
+- 后续 Cell 只用 `read_text()` 查看源码，不对 WildAgent 调用写入方法。
+
+异步练习使用 Notebook 支持的顶层 `await`，不要在 Cell 中套 `asyncio.run()`。
+
+### 当前环境的异步预检
+
+进入第03、05、06、07、09章的异步 Cell 前，先在终端运行：
 
 ```powershell
 uv run python -c "import asyncio; print('asyncio ok')"
 ```
 
-这个命令不联网。如果在 `import asyncio` 阶段就出现 Windows `WinError 10106`，说明代码尚未进入 WebSocket、GenerationJob 或 LangGraph。先把它记录为当前 Python/Windows Socket 运行环境阻塞，不要据此修改消息协议、节点或模型配置。
+本次整理时，这台机器仍在 `import asyncio` 阶段出现 `OSError: [WinError 10106]`。这说明 Python 尚未运行到 WebSocket、假对象或 LangGraph 代码，属于当前 Windows Socket/Winsock 环境阻塞。同步阅读与同步 Cell 可以继续；异步 Cell 要等该环境恢复后再运行，不要因此修改消息协议或节点。
 
-## 版本与资料依据
+## 阅读时的三条规则
 
-本模块以当前仓库源码为准：
+1. 先找调用者，再判断函数是否属于主链；名字像入口并不等于真的被入口调用。
+2. 对照当前 `graph.py` 验证注释。`ws_agent.py` 中仍可能存在未同步的旧注释，调用图比注释更可信。
+3. 08只研究 Graph 的接入与事件边界；State、Reducer、条件边、`Command` 和 Checkpoint 的内部机制留到10模块。
 
-| 项目 | 当前声明 | 本模块用途 |
-|---|---|---|
-| studyAgent | Python 3.12+ | Notebook 基础练习 |
-| studyAgent | `langgraph-cli[inmem]>=0.4.31` | 最小 Graph 事件观察 |
-| WildAgent | `fastapi[standard]>=0.139.2` | `/ws/agent` WebSocket 入口 |
-| WildAgent | `langgraph>=1.2.9` | Graph、节点和 `astream_events()` |
-| WildAgent | `langgraph-checkpoint-sqlite>=3.1.0` | 持久化 Checkpoint |
-
-只读对照源码：
-
-- [`agentBridge.ts`](../../WildAgent/wild-web/src/agent/agentBridge.ts)
-- [`protocol.ts`](../../WildAgent/wild-web/src/agent/protocol.ts)
-- [`ws_agent.py`](../../WildAgent/wild-server/app/api/ws_agent.py)
-- [`generation_job_service.py`](../../WildAgent/wild-server/app/services/generation_job_service.py)
-- [`graph.py`](../../WildAgent/wild-server/app/agent/graph.py)
-- [`graph_state.py`](../../WildAgent/wild-server/app/agent/graph_state.py)
-
-## 本模块与后续模块的边界
+## 与09、10模块的边界
 
 ```text
-08：纵向走通一次请求，只要求能找到节点
-09：横向梳理包、职责、依赖和设计模式
-10：深入 State、Reducer、边和节点间数据传递
-11：深入节点内部的模型客户端调用
-16：深入心跳、断线、事件重放和并发可靠性
+08：纵向读懂一条 WebSocket 请求，能从前端找到 Graph 边界再回到前端
+09：横向识别模块职责、依赖方向和设计模式，解释代码为什么这样组织
+10：深入 LangGraph 的 State、Reducer、边、节点通信、暂停和恢复
 ```
 
-## 模块完成标准
+后续模块也必须继续使用“真实源码切片 + Notebook 最小观察”的方式：
 
-- [ ] 能区分连接、请求、会话、任务、Graph 运行和事件
-- [ ] 能从 `sendUserMessage()` 找到 `agent_websocket()`
-- [ ] 能从 `start_job()` 找到 `_handle_with_langgraph()`
-- [ ] 能解释为什么 Graph 从 `classifier` 开始
-- [ ] 给出一个节点名后，能找到 `add_node()` 和真实实现文件
-- [ ] 能区分 `on_chain_end` 与 `agent_step`
-- [ ] 能解释事件为什么先进入 `DurableEventSink`
-- [ ] 能识别主路径与兼容路径
-- [ ] 已在自己的 Notebook 中写出一份带源码证据的完整调用链
-- [ ] 没有修改 WildAgent，也没有让项目替自己写完 Notebook
+- 09不背设计模式定义。每个模式必须指出 WildAgent 的参与类、调用关系、解决的问题和带来的代价；最终产出模块依赖图与模式证据表。
+- 10不重复04的入门 Graph。先用 `classifier → chat` 最短路径建立字段来源—消费者表，再进入 Reducer、条件边、动态 `Send`、`Command`、Checkpoint、计划审核暂停与恢复，并把节点事件重新接回08的 WebSocket 链路。
+
+## 完成标准
+
+- [ ] 我能画出 `sendUserMessage → agent_websocket → start_job → Graph → handleMessage` 主链
+- [ ] 我能解释请求、连接、任务、Graph 运行和事件的区别
+- [ ] 我能说出 `agent_websocket()` 每个 `type` 分支负责什么
+- [ ] 我能解释 `_prepare_server_request()` 不直接修改原字典的原因
+- [ ] 我能说明 `DurableEventSink` 为什么不是普通 `WebSocket.send_json()`
+- [ ] 我能从 `astream_events()` 的事件找到节点名
+- [ ] 我能区分主路径、遗留路径和测试入口
+- [ ] 我已在 `01.basic.ipynb` 中完成各章的最小验证与错误观察
+- [ ] 我没有修改 WildAgent，也没有让工具替我填完 Notebook

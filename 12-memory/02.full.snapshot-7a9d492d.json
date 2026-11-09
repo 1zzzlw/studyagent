@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "saved_at": "2026-11-06T00:08:17.545011+00:00",
+  "states": {
+    "character_001": {
+      "mood": "有点烦躁",
+      "energy": 0.35,
+      "activity": "赶作业，中途打开聊天",
+      "attention_focus": "电脑上的作业",
+      "environment": "已读到下面消息的完整正文",
+      "current_intent": "先交),作业",
+      "version": 1
+    }
+  },
+  "observations": {
+    "obs_b785dc3f-b961-45c2-8494-fa340532bd1e": {
+      "owner_id": "character_001",
+      "kind": "user_report",
+      "content": "明天下午两点要不要去图书馆？有空就在东门见。带上我上周借给你的《活着》，我想拿回去。里面的蓝色便签别扔。我想去三楼靠窗，没位置就去二楼。",
+      "obtained_at": "2026-10-30T00:05:43.455551+00:00",
+      "state": {
+        "mood": "有点烦躁",
+        "energy": 0.35,
+        "activity": "赶作业，中途打开聊天",
+        "attention_focus": "电脑上的作业",
+        "environment": "已读到下面消息的完整正文",
+        "current_intent": "先交),作业",
+        "version": 1
+      }
+    },
+    "obs_7d6ae7ee-6694-4689-8a5a-d9de04f90b1d": {
+      "owner_id": "character_001",
+      "kind": "user_report",
+      "content": "周六下午三点要不要去城南书店？带上我借给你的《小王子》，我想拿回来给妹妹看。里面夹着电影票，要一起带回来。周六没空就改周日上午。",
+      "obtained_at": "2026-10-30T00:05:43.455551+00:00",
+      "state": {
+        "mood": "有点烦躁",
+        "energy": 0.35,
+        "activity": "赶作业，中途打开聊天",
+        "attention_focus": "电脑上的作业",
+        "environment": "已读到下面消息的完整正文",
+        "current_intent": "先交),作业",
+        "version": 1
+      }
+    },
+    "obs_ddb0307f-cc8f-4208-b180-28663f4e599b": {
+      "owner_id": "character_001",
+      "kind": "user_report",
+      "content": "下周一晚上六点能来帮我搬书柜吗？带上我借给你的《平凡的世界》，一共三册。搬完请你去路口面馆。要是加班就改周四。",
+      "obtained_at": "2026-10-30T00:05:43.455551+00:00",
+      "state": {
+        "mood": "有点烦躁",
+        "energy": 0.35,
+        "activity": "赶作业，中途打开聊天",
+        "attention_focus": "电脑上的作业",
+        "environment": "已读到下面消息的完整正文",
+        "current_intent": "先交),作业",
+        "version": 1
+      }
+    },
+    "obs_624c5831-0e27-4452-bfdb-3728af65191a": {
+      "owner_id": "character_001",
+      "kind": "controlled_example",
+      "content": "我与用户游览苏州平江路，用户送给我一张紫色书签。",
+      "obtained_at": "2026-07-09T00:05:43.455551+00:00"
+    },
+    "obs_aaad8319-7e52-46a7-a05a-104f181d4f37": {
+      "owner_id": "character_001",
+      "kind": "controlled_example",
+      "content": "用户说：这周因为加班可能少聊天。",
+      "obtained_at": "2026-10-30T00:05:43.455551+00:00"
+    },
+    "obs_9681debf-0208-443c-8cf2-6359c3d0a480": {
+      "owner_id": "character_001",
+      "kind": "user_report",
+      "content": "这周其实在准备考试，之前说加班是个借口。",
+      "obtained_at": "2026-11-06T00:05:43.455551+00:00"
+    }
+  },
+  "memories": {
+    "6b15f29a-ee2a-4258-93a2-337e66425039": {
+      "memory_id": "6b15f29a-ee2a-4258-93a2-337e66425039",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_b785dc3f-b961-45c2-8494-fa340532bd1e",
+      "content": "用户说如果明天下午两点有空，就邀请角色去图书馆并在东门见，邀请尚未确认。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.564,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "35130b4b-d9a0-4c21-a133-52a358924ff9": {
+      "memory_id": "35130b4b-d9a0-4c21-a133-52a358924ff9",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_b785dc3f-b961-45c2-8494-fa340532bd1e",
+      "content": "用户说上周借给角色的《活着》要拿回去，让角色明天带去。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.698,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "active",
+      "supersedes_id": null
+    },
+    "25247b8b-d6ad-4fec-82ee-ec1e6297874a": {
+      "memory_id": "25247b8b-d6ad-4fec-82ee-ec1e6297874a",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_b785dc3f-b961-45c2-8494-fa340532bd1e",
+      "content": "用户提醒《活着》里的蓝色便签不要扔。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.412,
+      "strength_after_recall": 0.4319436282881631,
+      "stability_days": 44.0560662445453,
+      "recall_count": 1,
+      "last_recalled_at": "2026-11-06T00:05:43.455551Z",
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "9c079985-04cd-47ef-92f5-df91ed852ef5": {
+      "memory_id": "9c079985-04cd-47ef-92f5-df91ed852ef5",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_7d6ae7ee-6694-4689-8a5a-d9de04f90b1d",
+      "content": "用户问我周六下午三点要不要去城南书店，并说如果周六没空就改到周日上午。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.54,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "d3b94b08-a79b-41b9-a5fc-38f18a31ad20": {
+      "memory_id": "d3b94b08-a79b-41b9-a5fc-38f18a31ad20",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_7d6ae7ee-6694-4689-8a5a-d9de04f90b1d",
+      "content": "用户表示要把借给我的《小王子》拿回来给妹妹看，让我去时带上。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.49,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "06e5aa33-4062-434a-b1b8-6e135f8e7d72": {
+      "memory_id": "06e5aa33-4062-434a-b1b8-6e135f8e7d72",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_7d6ae7ee-6694-4689-8a5a-d9de04f90b1d",
+      "content": "用户说《小王子》里面夹着电影票，要一起带回来。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.37,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "1f8e7ac6-c3b2-48fc-b158-c4cde1abdde1": {
+      "memory_id": "1f8e7ac6-c3b2-48fc-b158-c4cde1abdde1",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_ddb0307f-cc8f-4208-b180-28663f4e599b",
+      "content": "用户表示下周一晚上六点想请角色帮忙搬书柜，并说如果角色加班就改到周四；角色尚未确认是否去。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.6,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "eb25cf1c-4e6f-4aea-bd80-db93f883353b": {
+      "memory_id": "eb25cf1c-4e6f-4aea-bd80-db93f883353b",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_ddb0307f-cc8f-4208-b180-28663f4e599b",
+      "content": "用户提醒角色带上用户之前借给角色的《平凡的世界》，一共三册。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.42,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "fading",
+      "supersedes_id": null
+    },
+    "63cffebc-644d-4853-9238-a9b1e624e4a1": {
+      "memory_id": "63cffebc-644d-4853-9238-a9b1e624e4a1",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_ddb0307f-cc8f-4208-b180-28663f4e599b",
+      "content": "用户说搬完书柜后请角色去路口面馆。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.245,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "forgotten",
+      "supersedes_id": null
+    },
+    "trip_main": {
+      "memory_id": "trip_main",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_624c5831-0e27-4452-bfdb-3728af65191a",
+      "content": "我曾与用户一起游览苏州平江路。",
+      "created_at": "2026-07-09T00:05:43.455551Z",
+      "initial_strength": 0.9,
+      "strength_after_recall": null,
+      "stability_days": 300.0,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "active",
+      "supersedes_id": null
+    },
+    "trip_detail": {
+      "memory_id": "trip_detail",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_624c5831-0e27-4452-bfdb-3728af65191a",
+      "content": null,
+      "created_at": "2026-07-09T00:05:43.455551Z",
+      "initial_strength": 0.25,
+      "strength_after_recall": null,
+      "stability_days": 8.0,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "erased",
+      "supersedes_id": null
+    },
+    "busy_reason": {
+      "memory_id": "busy_reason",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_aaad8319-7e52-46a7-a05a-104f181d4f37",
+      "content": "用户曾说，这周因为加班可能减少聊天。",
+      "created_at": "2026-10-30T00:05:43.455551Z",
+      "initial_strength": 0.7,
+      "strength_after_recall": null,
+      "stability_days": null,
+      "recall_count": 0,
+      "last_recalled_at": null,
+      "status": "superseded",
+      "supersedes_id": null
+    },
+    "c5b95b96-3558-44cc-93fa-524a262dfc23": {
+      "memory_id": "c5b95b96-3558-44cc-93fa-524a262dfc23",
+      "owner_id": "character_001",
+      "source_observation_id": "obs_9681debf-0208-443c-8cf2-6359c3d0a480",
+      "content": "用户后来表示：这周其实在准备考试，之前说加班是个借口。",
+      "created_at": "2026-11-06T00:05:43.455551Z",
+      "initial_strength": 0.7,
+      "strength_after_recall": 0.7,
+      "stability_days": 63.3,
+      "recall_count": 1,
+      "last_recalled_at": "2026-11-06T00:05:43.455551Z",
+      "status": "active",
+      "supersedes_id": "busy_reason"
+    }
+  }
+}

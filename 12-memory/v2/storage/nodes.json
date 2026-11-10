@@ -1,0 +1,454 @@
+{
+  "node_1": {
+    "node_id": "node_1",
+    "node_count": 1,
+    "type_count": 1,
+    "type": "chat",
+    "depth": 0,
+    "created": "2026-11-08T03:03:50.998960Z",
+    "expiration": null,
+    "last_accessed": "2026-11-08T03:04:50.486652Z",
+    "subject": "小忆",
+    "predicate": "chat with",
+    "object": "用户",
+    "description": "与用户的一轮真实交流",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "用户",
+      "小忆"
+    ],
+    "filling": [
+      [
+        "用户",
+        "明天出去玩吗，去西湖，下午2点"
+      ],
+      [
+        "小忆",
+        "我还在赶作业，有点焦头烂额……明天下午两点去西湖的话，我可能得先看看作业能不能交完。等我先把手头这个作业搞定再说？"
+      ]
+    ],
+    "source_observation_id": "obs_acb7b9be-cab0-4f72-ba1a-9bced399b724",
+    "attention": 1.0,
+    "emotional_impact": 0.0,
+    "initial_strength": 0.5,
+    "strength_after_recall": 0.5000015132082294,
+    "stability_days": 45.50068850974435,
+    "recall_count": 1,
+    "status": "fading",
+    "supersedes_id": null
+  },
+  "node_2": {
+    "node_id": "node_2",
+    "node_count": 2,
+    "type_count": 1,
+    "type": "event",
+    "depth": 0,
+    "created": "2026-11-08T03:03:50.998960Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "用户",
+    "predicate": "邀请",
+    "object": "小忆明天下午两点去西湖玩",
+    "description": "用户邀请我明天下午两点去西湖玩。",
+    "embedding_key": null,
+    "poignancy": 6.0,
+    "keywords": [
+      "明天",
+      "下午两点",
+      "西湖",
+      "出去玩",
+      "邀请"
+    ],
+    "filling": [
+      "node_1"
+    ],
+    "source_observation_id": "obs_acb7b9be-cab0-4f72-ba1a-9bced399b724",
+    "attention": 0.7,
+    "emotional_impact": 0.5,
+    "initial_strength": 0.6,
+    "strength_after_recall": 0.6014603009283347,
+    "stability_days": 55.39303851676675,
+    "recall_count": 3,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_3": {
+    "node_id": "node_3",
+    "node_count": 3,
+    "type_count": 1,
+    "type": "thought",
+    "depth": 1,
+    "created": "2026-11-08T03:03:50.998960Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "我",
+    "predicate": "担心并判断",
+    "object": "作业能否交完会影响明天下午去西湖",
+    "description": "我还在赶作业，有点焦头烂额；对于明天下午两点去西湖，我不确定作业能不能交完，想先把手头作业搞定再说。",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "先完成",
+      "西湖",
+      "作业",
+      "不确定",
+      "交作业"
+    ],
+    "filling": [
+      "node_1"
+    ],
+    "source_observation_id": "obs_acb7b9be-cab0-4f72-ba1a-9bced399b724",
+    "attention": 0.85,
+    "emotional_impact": 0.6,
+    "initial_strength": 0.635,
+    "strength_after_recall": 0.6362609827494219,
+    "stability_days": 58.50853100916382,
+    "recall_count": 3,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_4": {
+    "node_id": "node_4",
+    "node_count": 4,
+    "type_count": 2,
+    "type": "chat",
+    "depth": 0,
+    "created": "2026-11-08T03:04:50.486652Z",
+    "expiration": null,
+    "last_accessed": "2026-11-08T03:04:50.486652Z",
+    "subject": "小忆",
+    "predicate": "chat with",
+    "object": "用户",
+    "description": "与用户的一轮真实交流",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "用户",
+      "小忆"
+    ],
+    "filling": [
+      [
+        "用户",
+        "你作业还有多少"
+      ],
+      [
+        "小忆",
+        "具体还剩多少我也说不准，反正还没写完……我现在只想先把它赶完。西湖的事等我确定作业能交了再给你准信，好吗？"
+      ]
+    ],
+    "source_observation_id": "obs_84b54054-1dae-4006-a6bd-2be02595bc43",
+    "attention": 1.0,
+    "emotional_impact": 0.0,
+    "initial_strength": 0.5,
+    "strength_after_recall": 0.5,
+    "stability_days": 45.5,
+    "recall_count": 0,
+    "status": "fading",
+    "supersedes_id": null
+  },
+  "node_5": {
+    "node_id": "node_5",
+    "node_count": 5,
+    "type_count": 2,
+    "type": "event",
+    "depth": 0,
+    "created": "2026-11-08T03:04:50.486652Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "用户",
+    "predicate": "询问",
+    "object": "小忆作业还剩多少",
+    "description": "用户问我作业还有多少；我回答具体还剩多少说不准，反正还没写完，只想先把它赶完，西湖的事等我确定作业能交了再给准信。",
+    "embedding_key": null,
+    "poignancy": 6.0,
+    "keywords": [
+      "先赶完",
+      "作业剩余",
+      "说不准",
+      "还没写完",
+      "西湖",
+      "准信"
+    ],
+    "filling": [
+      "node_4"
+    ],
+    "source_observation_id": "obs_84b54054-1dae-4006-a6bd-2be02595bc43",
+    "attention": 0.85,
+    "emotional_impact": 0.55,
+    "initial_strength": 0.66,
+    "strength_after_recall": 0.6611304638799231,
+    "stability_days": 60.733162914406414,
+    "recall_count": 2,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_6": {
+    "node_id": "node_6",
+    "node_count": 6,
+    "type_count": 2,
+    "type": "thought",
+    "depth": 2,
+    "created": "2026-11-08T03:04:50.486652Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "我",
+    "predicate": "判断并打算",
+    "object": "先赶完作业，等确定能交再回应西湖安排",
+    "description": "我说不准作业还剩多少，但知道还没写完；我现在只想先把它赶完，西湖的事要等我确认作业能交后再给准信。",
+    "embedding_key": null,
+    "poignancy": 6.0,
+    "keywords": [
+      "西湖",
+      "赶完",
+      "作业",
+      "不确定",
+      "准信",
+      "优先级"
+    ],
+    "filling": [
+      "node_4",
+      "node_3"
+    ],
+    "source_observation_id": "obs_84b54054-1dae-4006-a6bd-2be02595bc43",
+    "attention": 0.9,
+    "emotional_impact": 0.65,
+    "initial_strength": 0.705,
+    "strength_after_recall": 0.7059197018299368,
+    "stability_days": 64.73868375859311,
+    "recall_count": 2,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_7": {
+    "node_id": "node_7",
+    "node_count": 7,
+    "type_count": 3,
+    "type": "chat",
+    "depth": 0,
+    "created": "2026-11-08T03:06:04.814231Z",
+    "expiration": null,
+    "last_accessed": "2026-11-08T03:06:04.814231Z",
+    "subject": "小忆",
+    "predicate": "chat with",
+    "object": "用户",
+    "description": "与用户的一轮真实交流",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "用户",
+      "小忆"
+    ],
+    "filling": [
+      [
+        "用户",
+        "那我明天再问你吧"
+      ],
+      [
+        "小忆",
+        "好，那你明天再问我吧。我现在先把作业赶完，等确认能交了再给你准信。"
+      ]
+    ],
+    "source_observation_id": "obs_23335cbe-a76f-458f-88e8-4d711d30d49a",
+    "attention": 1.0,
+    "emotional_impact": 0.0,
+    "initial_strength": 0.5,
+    "strength_after_recall": 0.5,
+    "stability_days": 45.5,
+    "recall_count": 0,
+    "status": "fading",
+    "supersedes_id": null
+  },
+  "node_8": {
+    "node_id": "node_8",
+    "node_count": 8,
+    "type_count": 3,
+    "type": "event",
+    "depth": 0,
+    "created": "2026-11-08T03:06:04.814231Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "用户",
+    "predicate": "约定",
+    "object": "明天再问小忆作业与西湖安排",
+    "description": "用户说明天再问我，我答应了；我仍要先赶完作业，等确认能交了再给准信。",
+    "embedding_key": null,
+    "poignancy": 6.0,
+    "keywords": [
+      "约定",
+      "西湖",
+      "作业",
+      "明天再问",
+      "准信"
+    ],
+    "filling": [
+      "node_7",
+      "node_6",
+      "node_5"
+    ],
+    "source_observation_id": "obs_23335cbe-a76f-458f-88e8-4d711d30d49a",
+    "attention": 0.8,
+    "emotional_impact": 0.45,
+    "initial_strength": 0.615,
+    "strength_after_recall": 0.6163700809034321,
+    "stability_days": 56.726707261724556,
+    "recall_count": 1,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_9": {
+    "node_id": "node_9",
+    "node_count": 9,
+    "type_count": 3,
+    "type": "thought",
+    "depth": 3,
+    "created": "2026-11-08T03:06:04.814231Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "我",
+    "predicate": "打算并判断",
+    "object": "先继续赶作业，明天再根据能否交完给准信",
+    "description": "我接受用户明天再问的安排；现在只想先把作业赶完，但我不确定作业能否按时交完，所以给准信要等确认能交了再说。",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "西湖",
+      "先赶作业",
+      "不确定",
+      "明天再问",
+      "准信"
+    ],
+    "filling": [
+      "node_7",
+      "node_6",
+      "node_3"
+    ],
+    "source_observation_id": "obs_23335cbe-a76f-458f-88e8-4d711d30d49a",
+    "attention": 0.85,
+    "emotional_impact": 0.55,
+    "initial_strength": 0.62,
+    "strength_after_recall": 0.6213416713283962,
+    "stability_days": 57.17177756880661,
+    "recall_count": 1,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_10": {
+    "node_id": "node_10",
+    "node_count": 10,
+    "type_count": 4,
+    "type": "chat",
+    "depth": 0,
+    "created": "2026-11-09T03:06:59.780924Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "小忆",
+    "predicate": "chat with",
+    "object": "用户",
+    "description": "与用户的一轮真实交流",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "用户",
+      "小忆"
+    ],
+    "filling": [
+      [
+        "用户",
+        "写完了吗"
+      ],
+      [
+        "小忆",
+        "还没，正盯着电脑赶呢。具体还剩多少我也说不准，只能先尽量把作业交完。等我确定能交了，再给你西湖那边的准信。"
+      ]
+    ],
+    "source_observation_id": "obs_3530e929-1d8f-421a-aa64-684a92820314",
+    "attention": 1.0,
+    "emotional_impact": 0.0,
+    "initial_strength": 0.5,
+    "strength_after_recall": 0.5,
+    "stability_days": 45.5,
+    "recall_count": 0,
+    "status": "fading",
+    "supersedes_id": null
+  },
+  "node_11": {
+    "node_id": "node_11",
+    "node_count": 11,
+    "type_count": 4,
+    "type": "event",
+    "depth": 0,
+    "created": "2026-11-09T03:06:59.780924Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "用户",
+    "predicate": "询问",
+    "object": "小忆作业是否写完",
+    "description": "用户问我写完了没有；我回答还没写完，正盯着电脑赶，具体还剩多少说不准，只能先尽量把作业交完，等确定能交了再给西湖那边的准信。",
+    "embedding_key": null,
+    "poignancy": 6.0,
+    "keywords": [
+      "还没写完",
+      "西湖",
+      "赶作业",
+      "写完了吗",
+      "电脑",
+      "准信"
+    ],
+    "filling": [
+      "node_10",
+      "node_9",
+      "node_6",
+      "node_5",
+      "node_2"
+    ],
+    "source_observation_id": "obs_3530e929-1d8f-421a-aa64-684a92820314",
+    "attention": 0.85,
+    "emotional_impact": 0.55,
+    "initial_strength": 0.66,
+    "strength_after_recall": 0.66,
+    "stability_days": 59.74,
+    "recall_count": 0,
+    "status": "active",
+    "supersedes_id": null
+  },
+  "node_12": {
+    "node_id": "node_12",
+    "node_count": 12,
+    "type_count": 4,
+    "type": "thought",
+    "depth": 4,
+    "created": "2026-11-09T03:06:59.780924Z",
+    "expiration": null,
+    "last_accessed": "2026-11-09T03:06:59.780924Z",
+    "subject": "我",
+    "predicate": "判断并打算",
+    "object": "在烦躁和低精力下先尽量赶完作业，再给西湖准信",
+    "description": "我现在有点烦躁、精力不高，注意力主要放在电脑上的作业；我还没写完，也不确定还剩多少，所以只能先尽量赶完，西湖的准信要等确认能交后再说。",
+    "embedding_key": null,
+    "poignancy": 5.0,
+    "keywords": [
+      "烦躁",
+      "西湖",
+      "作业",
+      "不确定",
+      "准信",
+      "低精力"
+    ],
+    "filling": [
+      "node_10",
+      "node_9",
+      "node_6",
+      "node_3"
+    ],
+    "source_observation_id": "obs_3530e929-1d8f-421a-aa64-684a92820314",
+    "attention": 0.8,
+    "emotional_impact": 0.6,
+    "initial_strength": 0.62,
+    "strength_after_recall": 0.62,
+    "stability_days": 56.18,
+    "recall_count": 0,
+    "status": "active",
+    "supersedes_id": null
+  }
+}

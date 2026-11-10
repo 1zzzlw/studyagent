@@ -1,0 +1,6 @@
+__pycache__/
+storge/chromadb/
+storge/v1/
+storge/v2/
+storge/v3/
+storge/web/

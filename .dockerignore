@@ -1,0 +1,11 @@
+**
+!pyproject.toml
+!uv.lock
+!README.md
+!12-memory/
+!12-memory/contrast/
+!12-memory/contrast/**
+12-memory/contrast/storge/
+12-memory/contrast/tests/
+**/__pycache__/
+**/*.pyc

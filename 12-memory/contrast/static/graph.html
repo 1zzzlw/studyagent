@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>记忆关联图 · 记忆实验室</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./graph.css">
+    <script src="./memory-detail.js" defer></script>
+    <script src="./graph.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+    <div class="brand"><span class="mark" aria-hidden="true">M</span><div><h1>记忆关联图</h1><p>只画真实存储的关系，不用相似度推测连线。</p></div></div>
+    <nav class="page-nav" aria-label="页面导航"><a href="./index.html">聊天与记忆</a><a class="active" href="./graph.html" aria-current="page">记忆关联图</a></nav>
+    <label class="mode-label">显示范围<select id="graph-mode"><option value="all">三版并排对比</option><option value="v1">v1 · GA</option><option value="v2">v2 · A-Mem</option><option value="v3">v3 · GA + A-Mem</option></select></label>
+</header>
+<main class="graph-workspace">
+    <section class="graph-main" aria-label="三个版本的记忆关系">
+        <div class="graph-controls"><label for="graph-search">查找记忆</label><input id="graph-search" type="search" placeholder="输入正文或 ID，定位下方节点"><button id="refresh-graph" type="button">立即刷新</button><label><input id="neighborhood" type="checkbox"> 只看选中节点及直接关联</label></div>
+        <div class="legend" aria-label="图例"><span class="legend-node note">A-Mem 笔记 note</span><span class="legend-node event">事件 event</span><span class="legend-node thought">认识 thought</span><span class="legend-node chat">原话 chat</span><span class="legend-edge evidence">→ 来源 / 证据</span><span class="legend-edge link">— 语义关联</span><span class="legend-edge supersedes">⇢ 纠正旧认识</span></div>
+        <p class="graph-help">有向边从当前记忆指向来源或被纠正的旧认识；v3 的语义 links 合并双向记录，v2 的 links 按实际存储方向展示箭头。拖动画布移动，用 ± 缩放，点节点看完整详情。图中未标出的字段仍保留在详情里。</p>
+        <p id="graph-notice" role="status" aria-live="polite"></p>
+        <div id="graph-cards" class="graph-cards"></div>
+    </section>
+    <aside class="graph-inspector" id="graph-inspector" aria-label="节点列表和完整记忆详情">
+        <div class="section-row"><h2>节点与关联详情</h2><span id="graph-count" class="count">0</span></div>
+        <div id="graph-tabs" class="tabs" role="group" aria-label="切换详情版本"><button data-version="v1" aria-pressed="true">v1</button><button data-version="v2" aria-pressed="false">v2</button><button data-version="v3" aria-pressed="false">v3</button></div>
+        <p id="relation-summary" class="muted">等待加载……</p>
+        <label class="graph-list-label" for="node-type">节点类型</label><select id="node-type"><option value="all">全部类型</option><option value="event">事件 event</option><option value="thought">认识 thought</option><option value="chat">原话 chat</option><option value="note">A-Mem 笔记 note</option></select>
+        <div id="graph-node-list" class="memory-list" aria-label="可操作的完整节点列表"></div>
+        <section id="graph-memory-detail" class="memory-detail"><p class="empty-detail">点选节点后，查看全部字段和关联。</p></section>
+        <section id="incident-panel" hidden><h3 class="detail-section">这条记忆的全部入边与出边</h3><div id="incident-list"></div></section>
+    </aside>
+</main>
+</body>
+</html>

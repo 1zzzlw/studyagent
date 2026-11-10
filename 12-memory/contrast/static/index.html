@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>记忆实验室</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./memory-detail.js" defer></script>
+    <script src="./app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+    <div class="brand"><span class="mark" aria-hidden="true">M</span>
+        <div><h1>记忆实验室</h1>
+            <p>聊一句，看见记忆怎样变化。</p></div>
+    </div>
+    <nav class="page-nav" aria-label="页面导航"><a class="active" href="./index.html" aria-current="page">聊天与记忆</a><a href="./graph.html">记忆关联图</a></nav>
+    <label class="mode-label">对话对象<select id="mode">
+        <option value="all">三版一起对比</option>
+        <option value="v1">只聊 v1</option>
+        <option value="v2">只聊 v2</option>
+        <option value="v3">只聊 v3</option>
+    </select></label>
+</header>
+<main class="workspace">
+    <section class="conversation" aria-label="对话与对比">
+        <div class="toolbar">
+            <span class="local-badge">独立 Web 数据 · 从空记忆开始</span>
+            <div class="tools">
+                <label class="days-label">经过 <input id="days" type="number" min="0.001" step="any" value="30"
+                                                      aria-label="流逝天数"> 天</label>
+                <button id="elapse" type="button">推进时间</button>
+                <button id="reset" class="danger" type="button">清空</button>
+            </div>
+        </div>
+        <a class="mobile-inspector-link" href="#memory-inspector">查看完整记忆与处理进度 ↓</a>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <div id="mobile-view" class="mobile-view" hidden>
+            <p>消息仍发给三版，切换下方标签查看回答。</p>
+            <div id="mobile-view-tabs" class="tabs" role="group" aria-label="切换查看三版回答"><button data-version="v1" aria-pressed="true">v1 回答</button><button data-version="v2" aria-pressed="false">v2 回答</button><button data-version="v3" aria-pressed="false">v3 回答</button></div>
+        </div>
+        <div id="chats" class="chat-grid"></div>
+        <form id="composer" class="composer">
+            <label for="message">开始聊天</label>
+            <div class="compose-row"><textarea id="message" rows="2" maxlength="20000"
+                                               placeholder="说说你的近况、偏好，或者问它还记不记得某件事……"
+                                               required></textarea>
+                <button id="send" type="submit" class="primary">发送给三版 <span aria-hidden="true">↑</span></button>
+            </div>
+            <div class="compose-foot"><label><input id="readonly" type="checkbox"> 只问不记：不新增、不强化、不反思</label><span>Enter 发送 · Shift + Enter 换行</span>
+            </div>
+        </form>
+    </section>
+    <aside id="memory-inspector" class="inspector" aria-label="记忆结构与处理进度">
+        <div class="inspector-head">
+            <div><span class="eyebrow">MEMORY INSPECTOR</span>
+                <h2>看看它记住了什么</h2></div>
+            <span id="memory-count" class="count">0</span></div>
+        <div id="version-tabs" class="tabs" role="group" aria-label="查看哪个版本的记忆">
+            <button data-version="v1" aria-pressed="true">v1</button>
+            <button data-version="v2" aria-pressed="false">v2</button>
+            <button data-version="v3" aria-pressed="false">v3</button>
+        </div>
+        <section class="processing-panel">
+            <div class="section-row"><h3>处理进度</h3><span id="process-count" class="muted"></span></div>
+            <p id="process-stage" role="status">正在连接……</p>
+            <p id="experiment-time" class="muted"></p>
+            <details id="progress-details">
+                <summary>查看处理记录</summary>
+                <ol id="progress-log"></ol>
+            </details>
+        </section>
+        <section class="memory-panel">
+            <div class="section-row"><h3>已存记忆</h3><span class="muted">点选查看全部字段</span></div>
+            <div class="filters"><label class="sr-only" for="search">搜索记忆</label><input id="search" type="search"
+                                                                                            placeholder="搜索正文或 ID"><label
+                    class="sr-only" for="type">记忆类型</label><select id="type">
+                <option value="all">全部类型</option>
+                <option value="event">事件 event</option>
+                <option value="thought">认识 thought</option>
+                <option value="chat">原话 chat</option>
+                <option value="note">A-Mem 笔记 note</option>
+            </select></div>
+            <div id="memory-list" class="memory-list"></div>
+        </section>
+        <section id="memory-detail" class="memory-detail"><p class="empty-detail">记忆生成后，点开一条看看它的结构。<br>v1/v3 保存原话、事件和反思认识；v2 保存 A-Mem 笔记。
+        </p></section>
+    </aside>
+</main>
+<template id="chat-template">
+    <article class="chat-card">
+        <header>
+            <div class="version-heading"><span class="version-tag"></span>
+                <h2></h2></div>
+            <p class="version-description"></p>
+            <div class="card-status"><span class="connection-dot" aria-hidden="true"></span><span
+                    class="card-stage">连接中</span></div>
+            <p class="card-counts"></p></header>
+        <div class="messages" tabindex="0" aria-label="聊天记录"></div>
+    </article>
+</template>
+</body>
+</html>

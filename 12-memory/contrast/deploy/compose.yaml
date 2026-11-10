@@ -1,0 +1,15 @@
+name: memory-lab
+
+services:
+  memory-lab:
+    build:
+      context: ../../..
+      dockerfile: 12-memory/contrast/deploy/Dockerfile
+    env_file:
+      - ../../../.env
+    ports:
+      - "${WEB_PORT:-80}:80"
+    volumes:
+      - ../storge/web:/app/12-memory/contrast/storge/web
+    restart: unless-stopped
+    stop_grace_period: 15m

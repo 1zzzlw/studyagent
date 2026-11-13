@@ -16,18 +16,23 @@ def run(version="v1"):
     parser.add_argument("--import-only", action="store_true", help="只导入原始记忆，导入完成即退出")
     parser.add_argument("--question", help="独立只读提问，不写记忆、不强化、不使用短期历史")
     args = parser.parse_args()
+
     load_environment()
     root = Path(__file__).resolve().parent.parent
     data_file = root / "storge" / "memories.json"
     run_dir = root / "storge" / version
+
     seeds = load_seeds(data_file)  # 先完整校验，再调用向量接口。
     # 固定实验参考时刻，三个版本启动先后不会改变原始 300 条的年龄。
     now = datetime.fromisoformat(os.getenv("EXPERIMENT_NOW", "2026-11-10T12:00:00+08:00"))
     if now.tzinfo is None:
         raise ValueError("EXPERIMENT_NOW 必须带时区")
+
     now = now.astimezone(timezone.utc)
     store = ChromaStore(root / "storge" / "chromadb" / version, version,
                         create_embeddings(), embedding_signature())
+
+    # 记忆衰减强化引擎
     engine = EbbinghausMemoryEngine()
     imported = import_baseline(store, seeds, now, engine, run_dir, file_hash(data_file))
     runtime = Runtime(store, ModelGateway(), now, run_dir, version)

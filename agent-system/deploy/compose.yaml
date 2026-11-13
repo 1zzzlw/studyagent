@@ -1,0 +1,21 @@
+name: agent-system
+
+services:
+  agent-system:
+    image: agent-system:local
+    build:
+      context: ../..
+      dockerfile: agent-system/deploy/Dockerfile
+    env_file:
+      - ../.env
+    ports:
+      - "80:8000"
+    volumes:
+      - ../storge:/app/agent-system/storge
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

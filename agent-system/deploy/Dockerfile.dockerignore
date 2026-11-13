@@ -1,0 +1,16 @@
+# 独立构建上下文，不修改供 contrast 使用的根 .dockerignore。
+**
+!pyproject.toml
+!uv.lock
+!README.md
+!agent-system/
+!agent-system/main.py
+!agent-system/init.sql
+!agent-system/agent/
+!agent-system/agent/**
+**/.env
+agent-system/storge/
+agent-system/tests/
+agent-system/deploy/
+**/__pycache__/
+**/*.pyc
